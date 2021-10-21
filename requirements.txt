@@ -1,4 +1,4 @@
-atari-py
+openai-gym
 opencv-python
 plotly
 torch
