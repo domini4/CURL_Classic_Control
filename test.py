@@ -31,8 +31,11 @@ def test(args, T, dqn, val_mem, metrics, results_dir, evaluate=False):
       if done:
         state, reward_sum, done = env.reset(), 0, False
 
-      action = dqn.act_e_greedy(state)  # Choose an action ε-greedily
-      state, reward, done = env.step(action)  # Step
+      
+      action = dqn.act(state)  # Choose an action ε-greedily
+      #action = dqn.act_e_greedy(state)  # Choose an action ε-greedily
+      state, reward, done = env.step(action)  # OpenAI Step
+      #state, reward, done = env.step(action)  # Step
       reward_sum += reward
       if args.render:
         env.render()
