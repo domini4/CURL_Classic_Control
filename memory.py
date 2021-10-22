@@ -14,7 +14,7 @@ import torch
 
 
 Transition = namedtuple('Transition', ('timestep', 'state', 'action', 'reward', 'nonterminal'))
-blank_trans = Transition(0, torch.zeros(84, 126, dtype=torch.uint8), None, 0, False)
+blank_trans = Transition(0, torch.zeros(84, 126, dtype=torch.uint8), None, 0, False) # for classic control
 #blank_trans = Transition(0, torch.zeros(84, 84, dtype=torch.uint8), None, 0, False)
 
 

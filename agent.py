@@ -17,7 +17,7 @@ import kornia.augmentation as aug
 import torch.nn as nn
 from model import DQN
 
-random_shift = nn.Sequential(aug.RandomCrop((80, 120)), nn.ReplicationPad2d(4), aug.RandomCrop((84, 126)))
+random_shift = nn.Sequential(aug.RandomCrop((80, 120)), nn.ReplicationPad2d(4), aug.RandomCrop((84, 126))) # for classic control
 #random_shift = nn.Sequential(aug.RandomCrop((80, 80)), nn.ReplicationPad2d(4), aug.RandomCrop((84, 84)))
 aug = random_shift
 
@@ -25,7 +25,6 @@ class Agent():
   def __init__(self, args, env):
     self.args = args
     self.action_space = env.action_space()
-    #print('dqn action space', self.action_space)
     self.atoms = args.atoms
     self.Vmin = args.V_min
     self.Vmax = args.V_max
@@ -73,13 +72,11 @@ class Agent():
   def act(self, state):
     with torch.no_grad():
       a, _ = self.online_net(state.unsqueeze(0))
-      #print('action:', (a * self.support).sum(2).argmax(1).item())
-      #print('action:',np.random.randint(0, self.action_space))
       return (a * self.support).sum(2).argmax(1).item()
 
   # Acts with an ε-greedy policy (used for evaluation only)
   def act_e_greedy(self, state, epsilon=0.01):  # High ε can reduce evaluation scores drastically gym - 0.01
-    with torch.no_grad():   # added for gym
+    with torch.no_grad():   # added for classic control
         if np.random.rand() < epsilon:
             return np.random.randint(0, self.action_space)
         else:
@@ -89,14 +86,10 @@ class Agent():
   def learn(self, mem):
     # Sample transitions
     idxs, states, actions, returns, next_states, nonterminals, weights = mem.sample(self.batch_size)
-    #print('states size:', states.shape)
-    #print('augmented states size:', aug(states).to(device=self.args.device).shape)
     aug_states_1 = aug(states).to(device=self.args.device)
     aug_states_2 = aug(states).to(device=self.args.device)
-    #print('aug_states_1:', aug_states_1.shape)
     # Calculate current state probabilities (online network noise already sampled)
     log_ps, _ = self.online_net(states, log=True)  # Log probabilities log p(s_t, ·; θonline)
-    #print('after log_ps')
     _, z_anch = self.online_net(aug_states_1, log=True)
     _, z_target = self.momentum_net(aug_states_2, log=True)
     z_proj = torch.matmul(self.online_net.W, z_target.T)

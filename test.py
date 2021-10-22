@@ -14,6 +14,7 @@ from plotly.graph_objs import Scatter
 from plotly.graph_objs.scatter import Line
 import torch
 
+
 from env import Env
 
 
@@ -27,18 +28,21 @@ def test(args, T, dqn, val_mem, metrics, results_dir, evaluate=False):
   # Test performance over several episodes
   done = True
   for _ in range(args.evaluation_episodes):
+    frames = []
+    step_count = 0
     while True:
       if done:
         state, reward_sum, done = env.reset(), 0, False
 
       
-      action = dqn.act(state)  # Choose an action ε-greedily
+      action = dqn.act(state)  # Choose greedy action
       #action = dqn.act_e_greedy(state)  # Choose an action ε-greedily
-      state, reward, done = env.step(action)  # OpenAI Step
+      state, reward, done = env.evaluate(action, results_dir, T, _, step_count)  # classic control step
       #state, reward, done = env.step(action)  # Step
       reward_sum += reward
-      if args.render:
-        env.render()
+      step_count += 1
+      #if args.render:
+        #env.render()
 
       if done:
         T_rewards.append(reward_sum)

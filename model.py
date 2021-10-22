@@ -65,12 +65,12 @@ class DQN(nn.Module):
       self.convs = nn.Sequential(nn.Conv2d(args.history_length, 32, 8, stride=4, padding=0), nn.ReLU(),
                                  nn.Conv2d(32, 64, 4, stride=2, padding=0), nn.ReLU(),
                                  nn.Conv2d(64, 64, 3, stride=1, padding=0), nn.ReLU())
-      self.conv_output_size = 5376
+      self.conv_output_size = 5376 # for classic control
       #self.conv_output_size = 3136
     elif args.architecture == 'data-efficient':
       self.convs = nn.Sequential(nn.Conv2d(args.history_length, 32, 5, stride=5, padding=0), nn.ReLU(),
                                  nn.Conv2d(32, 64, 5, stride=5, padding=0), nn.ReLU())
-      self.conv_output_size = 960 #64*3*5
+      self.conv_output_size = 960 #64*3*5 for classic control
       #self.conv_output_size = 576
     self.fc_h_v = NoisyLinear(self.conv_output_size, args.hidden_size, std_init=args.noisy_std)
     self.fc_h_a = NoisyLinear(self.conv_output_size, args.hidden_size, std_init=args.noisy_std)
@@ -84,12 +84,8 @@ class DQN(nn.Module):
     self.W = nn.Parameter(torch.rand(128, 128))
 
   def forward(self, x, log=False):
-    #print('shape of input:', x.shape)
     x = self.convs(x)
-    #print('shape of x:', x.shape)
-    #print('shape view x:', x.view(-1, self.conv_output_size).shape)
     x = x.view(-1, self.conv_output_size)
-    #print('new shape x:', x.shape)
     v = self.fc_z_v(F.relu(self.fc_h_v(x)))  # Value stream
     a = self.fc_z_a(F.relu(self.fc_h_a(x)))  # Advantage stream
     h = torch.matmul(x, self.W_h) + self.b_h # Contrastive head

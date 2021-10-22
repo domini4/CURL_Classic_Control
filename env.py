@@ -15,6 +15,8 @@ import torch
 import gym
 from skimage import color
 from skimage import io
+import os
+from PIL import Image
 
 
 class Env():
@@ -27,8 +29,7 @@ class Env():
     #self.ale.setInt('frame_skip', 0)
     #self.ale.setBool('color_averaging', False)
     #self.ale.loadROM(atari_py.get_game_path(args.game))  # ROM loading must be done after setting options
-#    actions = self.ale.getMinimalActionSet()
-#    print('atari actions', actions)
+    #actions = self.ale.getMinimalActionSet()
     # setting environment varibales for each environment
     if args.game == "CartPole-v1":
         actions_new = [0, 1]
@@ -36,21 +37,14 @@ class Env():
     else:
         actions_new = [0, 1, 2]
         self.env_name = "MountainCar-v0"
-    #print('actions new', actions_new)
-#    self.actions = dict([i, e] for i, e in zip(range(len(actions)), actions))
-#    print('atari self.actions', self.actions)
+    #self.actions = dict([i, e] for i, e in zip(range(len(actions)), actions))
     self.actions_new = dict([i, e] for i, e in zip(range(len(actions_new)), actions_new))
-    #print('atari self.actions_new', self.actions_new)
-    self.lives = 0  # Life counter (used in DeepMind training)
-    self.life_termination = False  # Used to check if resetting only from loss of life
+#    self.lives = 0  # Life counter (used in DeepMind training)
+#    self.life_termination = False  # Used to check if resetting only from loss of life
     self.window = args.history_length  # Number of frames to concatenate
     self.state_buffer = deque([], maxlen=args.history_length)
     self.training = True  # Consistent with model training mode
-    # gym modifications
-    #self.env_name = "CartPole-v1"
     self.env1 = gym.make(self.env_name)
-    #print('observation space:', self.env1.observation_space.shape)
-    #print('action space:', self.env1.action_space)
     self.env1.reset()
 
   def _get_state(self):
@@ -60,33 +54,25 @@ class Env():
     return torch.tensor(state, dtype=torch.float32, device=self.device)
     #return torch.tensor(state, dtype=torch.float32, device=self.device).div_(255)
 
+  def _get_state_evaluate(self, results_dir, T, _, step_count, t):
+    #state = cv2.resize(self.ale.getScreenGrayscale(), (84, 84), interpolation=cv2.INTER_LINEAR)
+    img = self.env1.render(mode='rgb_array')
+    im = Image.fromarray(img)
+    im.save(os.path.join(results_dir, "test" + str(T) + "_" + str(_) + str(step_count) + "_" + str(t)) + ".jpeg")
+    state = cv2.resize(color.rgb2gray(img), (126, 84), interpolation = cv2.INTER_CUBIC)
+    return torch.tensor(state, dtype=torch.float32, device=self.device)
+    #return torch.tensor(state, dtype=torch.float32, device=self.device).div_(255)
+
   def _reset_buffer(self):
     for _ in range(self.window):
       self.state_buffer.append(torch.zeros(84, 126, device=self.device))
       #self.state_buffer.append(torch.zeros(84, 84, device=self.device))
 
-  def rendor_env(self):
-    for episode in range(10):
-        self.env1.reset()
-        for t in range(500):
-            img = self.env1.render(mode='rgb_array')
-            #print(color.rgb2gray(img).shape)
-            img_new = cv2.resize(color.rgb2gray(img), (126, 84), interpolation = cv2.INTER_CUBIC)
-            #print(img_new.shape)
-            action = self.env1.action_space.sample()
-            next_state, reward, done, info = self.env1.step(action)
-            if done:
-                break
-            cv2.imshow("Resized image", img_new)
-
   def reset(self):
-    #print('in reset')
 #    if self.life_termination:
-#      print(' in if')
 #      self.life_termination = False  # Reset flag
 #      self.ale.act(0)  # Use a no-op after loss of life
 #    else:
-#      print('in else')
       # Reset internals
 #      self._reset_buffer()
 #      self.ale.reset_game()
@@ -96,26 +82,33 @@ class Env():
 #        if self.ale.game_over():
 #          self.ale.reset_game()
     # Process and return "initial" state
-    #print('outside')
-    #new code for gym
+    #new code for classic control
     self._reset_buffer()
     self.env1.reset()
-    #end new code for gym
+    #end new code for classic control
     observation = self._get_state()
-    #print('james state')
     #torch.set_printoptions(threshold=10_000)
-    #print(observation)
     self.state_buffer.append(observation)
 #    self.lives = self.ale.lives() # do not need for gym
     return torch.stack(list(self.state_buffer), 0)
 
-  def evaluate(self,action):
-      reward = 0
-      new_state, done = self.env1.reset(), False
-      while not done:
-          new_state, reward_s, is_terminal, info = self.env1.step(action)
-          reward += reward_s
-      return reward
+  def evaluate(self, action, results_dir, T, _, step_count):
+    # Repeat action 4 times, max pool over last 2 frames
+    frame_buffer = torch.zeros(2, 84, 126, device=self.device)
+    reward, done = 0, False
+    for t in range(4):
+      new_state, reward_s, is_terminal, info = self.env1.step(action)
+      reward += reward_s
+      if t == 2:
+        frame_buffer[0] = self._get_state_evaluate(results_dir, T, _, step_count, t)
+      elif t == 3:
+        frame_buffer[1] = self._get_state_evaluate(results_dir, T, _, step_count, t)
+      done = is_terminal
+      if done:
+        break
+    observation = frame_buffer.max(0)[0]
+    self.state_buffer.append(observation)
+    return torch.stack(list(self.state_buffer), 0), reward, done
 
   def step(self, action):
     # Repeat action 4 times, max pool over last 2 frames
@@ -124,7 +117,6 @@ class Env():
     reward, done = 0, False
 #    for t in range(4):
 #      reward += self.ale.act(self.actions.get(action)) # pass in the action to get reward
-      #print('reward:', self.actions.get(action))
 #      if t == 2:
 #        frame_buffer[0] = self._get_state()
 #      elif t == 3:
@@ -136,7 +128,6 @@ class Env():
       new_state, reward_s, is_terminal, info = self.env1.step(action)
       reward += reward_s
       #reward += self.ale.act(self.actions.get(action)) # pass in the action to get reward
-      #print('reward:', self.actions.get(action))
       if t == 2:
         frame_buffer[0] = self._get_state()
       elif t == 3:
@@ -148,7 +139,7 @@ class Env():
     observation = frame_buffer.max(0)[0]
     self.state_buffer.append(observation)
     # Detect loss of life as terminal in training mode
-    # no need to set lives in gym
+    # no need to set lives in classic control
 #    if self.training:
 #      lives = self.ale.lives() # no need in gym
 #      if lives < self.lives and lives > 0:  # Lives > 0 for Q*bert # only for DMControl

@@ -23,7 +23,7 @@ from agent import Agent
 from env import Env
 from memory import ReplayMemory
 from test import test
-#print(atari_py.list_games())
+
 
 game_list = ["CartPole-v1", "MountainCar-v0"]
 
@@ -70,11 +70,8 @@ parser.add_argument('--disable-bzip-memory', action='store_true', help='Don\'t z
 
 # Setup
 args = parser.parse_args()
-#print('james')
 xid = 'curl-' + args.game + '-' + str(seed)
 args.id = xid
-#print('james')
-#print(args.id)
 
 print(' ' * 26 + 'Options')
 for k, v in vars(args).items():
@@ -120,8 +117,6 @@ def save_memory(memory, memory_path, disable_bzip):
 env = Env(args)
 env.train()
 action_space = env.action_space()
-#print('action space atari:', action_space)
-#env.rendor_env()
 
 # Agent
 dqn = Agent(args, env)
@@ -140,9 +135,6 @@ else:
 
 priority_weight_increase = (1 - args.priority_weight) / (args.T_max - args.learn_start)
 
-# create epsilon decay
-#epsilon = 1.0
-#decay = (epsilon/args.T_max)
 
 # Construct validation memory
 val_mem = ReplayMemory(args, args.evaluation_size)
@@ -150,11 +142,6 @@ T, done = 0, True
 while T < args.evaluation_size:
   if done:
     state, done = env.reset(), False
-    #print(' done reset')
-  # new code for gym
-  #action = env.get_sample()
-  #next_state, _, done = env.step(action)
-  # end new code for gym
   next_state, _, done = env.step(np.random.randint(0, action_space))
   val_mem.append(state, None, None, done)
   state = next_state
@@ -171,21 +158,15 @@ else:
   for T in trange(1, args.T_max + 1):
     if done:
       state, done = env.reset(), False
-      #print(' done reset 2')
 
     if T % args.replay_frequency == 0:
       dqn.reset_noise()  # Draw a new set of noisy weights
       
-    # epsilon decay
-    #if epsilon > 0.1:
-      #epsilon -= decay
-      #print(epsilon)
 
-    action = dqn.act_e_greedy(state)  # Choose an action greedily (with noisy weights) GYM
+    action = dqn.act_e_greedy(state)  # Choose an action greedily (with noisy weights) classic control
     #action = dqn.act(state)  # Choose an action greedily (with noisy weights)
-    #print('action:', action)
     next_state, reward, done = env.step(action)  # Step
-    # below code only for ale env
+    # Removed reward clip for classic control environments
     #if args.reward_clip > 0:
       #reward = max(min(reward, args.reward_clip), -args.reward_clip)  # Clip rewards
     mem.append(state, action, reward, done)  # Append transition to memory
@@ -196,7 +177,6 @@ else:
 
       if T % args.replay_frequency == 0:
         #for _ in range(4):
-        #print('dqn learn called')
         dqn.learn(mem)  # Train with n-step distributional double-Q learning
         dqn.update_momentum_net() # MoCo momentum upate
 
@@ -223,4 +203,4 @@ else:
 
     state = next_state
 
-#env.close()
+env.close()
