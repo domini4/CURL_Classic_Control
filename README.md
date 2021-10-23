@@ -11,9 +11,9 @@ To install all dependencies, run `bash install.sh`. It is recommended that you i
 
 You can alternatively use the 'enviro_curl.yml' file to create a conda environment. To do so use the below command
 
-'''
+```
 conda env create -f enviro_curl.yml
-'''
+```
 
 Run the following command with the game as an argument:
 
