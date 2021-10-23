@@ -11,7 +11,7 @@ Run the following command with the game as an argument:
 
 CartPole-v1
 ```
-python main.py --T-max 100000 --game CartPole-v1 --V-max 20 --V-min -20 --max-episode-length 500
+python main.py --T-max 100000 --game CartPole-v1 --V-max 200 --V-min -200 --max-episode-length 500
 ```
 
 MountainCar-v0
@@ -20,3 +20,5 @@ python main.py --T-max 100000 --game MountainCar-v0 --V-max 20 --V-min -20 --max
 ```
 
 To install all dependencies, run `bash install.sh`. It is recommended that you install the dependencies manually based on the requirements document.
+
+![Alt Text](https://github.com/domini4/CURL_Classic_Control/video/cart_10000.gif)
