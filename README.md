@@ -21,4 +21,26 @@ python main.py --T-max 100000 --game MountainCar-v0 --V-max 20 --V-min -20 --max
 
 To install all dependencies, run `bash install.sh`. It is recommended that you install the dependencies manually based on the requirements document.
 
+CartPole-v1 after 10000 steps
+
 ![cartpole after 10000 steps](video/cart_10000.gif)
+
+CartPole-v1 after 50000 steps
+
+![cartpole after 50000 steps](video/cart_50000.gif)
+
+CartPole-v1 after 100000 steps
+
+![cartpole after 100000 steps](video/cart_100000.gif)
+
+MountainCar-v0 after 10000 steps
+
+![mountaincar after 10000 steps](video/mount_10000.gif)
+
+MountainCar-v0 after 50000 steps
+
+![mountaincar after 50000 steps](video/mount_50000.gif)
+
+MountainCar-v0 after 100000 steps
+
+![mountaincar after 100000 steps](video/mount_100000.gif)
