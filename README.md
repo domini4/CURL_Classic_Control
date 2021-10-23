@@ -21,4 +21,4 @@ python main.py --T-max 100000 --game MountainCar-v0 --V-max 20 --V-min -20 --max
 
 To install all dependencies, run `bash install.sh`. It is recommended that you install the dependencies manually based on the requirements document.
 
-![Alt Text](https://github.com/domini4/CURL_Classic_Control/video/cart_10000.gif)
+![](https://github.com/domini4/CURL_Classic_Control/video/cart_10000.gif)
