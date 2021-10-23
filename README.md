@@ -11,12 +11,12 @@ Run the following command with the game as an argument:
 
 CartPole-v1
 ```
-python main.py --T-max 250000 --game CartPole-v1 --max-episode-length 500
+python main.py --T-max 100000 --game CartPole-v1 --V-max 20 --V-min -20 --max-episode-length 500
 ```
 
 MountainCar-v0
 ```
-python main.py --T-max 250000 --game MountainCar-v0 --max-episode-length 200
+python main.py --T-max 100000 --game MountainCar-v0 --V-max 20 --V-min -20 --max-episode-length 200
 ```
 
 To install all dependencies, run `bash install.sh`. It is recommended that you install the dependencies manually based on the requirements document.
