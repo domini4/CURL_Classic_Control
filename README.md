@@ -7,6 +7,14 @@ CURL Rainbow
 This is an implementation of [CURL: Contrastive Unsupervised Representations for
 Reinforcement Learning](https://arxiv.org/abs/2004.04136) coupled with the [Data Efficient Rainbow method](https://arxiv.org/abs/1906.05243) for Classic Control Environments.
 
+To install all dependencies, run `bash install.sh`. It is recommended that you install the dependencies manually based on the requirements document.
+
+You can alternatively use the 'enviro_curl.yml' file to create a conda environment. To do so use the below command
+
+'''
+conda env create -f enviro_curl.yml
+'''
+
 Run the following command with the game as an argument:
 
 CartPole-v1
@@ -18,8 +26,6 @@ MountainCar-v0
 ```
 python main.py --T-max 100000 --game MountainCar-v0 --V-max 20 --V-min -20 --max-episode-length 200
 ```
-
-To install all dependencies, run `bash install.sh`. It is recommended that you install the dependencies manually based on the requirements document.
 
 CartPole-v1 after 10000 steps
 
