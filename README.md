@@ -1,5 +1,7 @@
 Name: James Dominic
+
 Paper title: CURL: Contrastive Unsupervised Representations for Reinforcement Learning.
+
 Implementation of choice: B. Apply the original method to a different field.
 
 CURL Rainbow
@@ -38,13 +40,7 @@ python main.py --T-max 100000 --game MountainCar-v0 --V-max 20 --V-min -20 --max
 CartPole-v1 after 10000 steps
 
 ![cartpole after 10000 steps](video/cart_10000.gif)
-
-CartPole-v1 after 50000 steps
-
 ![cartpole after 50000 steps](video/cart_50000.gif)
-
-CartPole-v1 after 100000 steps
-
 ![cartpole after 100000 steps](video/cart_100000.gif)
 
 MountainCar-v0 after 10000 steps
