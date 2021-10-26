@@ -39,9 +39,7 @@ python main.py --T-max 100000 --game MountainCar-v0 --V-max 20 --V-min -20 --max
 
 CartPole-v1 after 10000 steps
 
-![cartpole after 10000 steps](video/cart_10000.gif)
-![cartpole after 50000 steps](video/cart_50000.gif)
-![cartpole after 100000 steps](video/cart_100000.gif)
+![cartpole after 10000 steps](video/cart_10000.gif) | ![cartpole after 50000 steps](video/cart_50000.gif) | ![cartpole after 100000 steps](video/cart_100000.gif)
 
 MountainCar-v0 after 10000 steps
 
