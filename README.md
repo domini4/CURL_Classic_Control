@@ -1,3 +1,7 @@
+Name: James Dominic
+Paper title: CURL: Contrastive Unsupervised Representations for Reinforcement Learning.
+Implementation of choice: B. Apply the original method to a different field.
+
 CURL Rainbow
 =======
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE.md)
@@ -7,12 +11,16 @@ CURL Rainbow
 This is an implementation of [CURL: Contrastive Unsupervised Representations for
 Reinforcement Learning](https://arxiv.org/abs/2004.04136) coupled with the [Data Efficient Rainbow method](https://arxiv.org/abs/1906.05243) for Classic Control Environments.
 
-To install all dependencies, run `bash install.sh`. It is recommended that you install the dependencies manually based on the requirements document.
-
-You can alternatively use the 'enviro_curl.yml' file to create a conda environment. To do so use the below command
+To install all dependencies, use the 'enviro_curl.yml' file to create a conda environment. To do so use the below command. Make sure to navigate into the project folder before running this command.
 
 ```
 conda env create -f enviro_curl.yml
+```
+
+Now activate conda environments using below comment.
+
+```
+conda activate curl
 ```
 
 Run the following command with the game as an argument:
