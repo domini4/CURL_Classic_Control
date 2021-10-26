@@ -5,7 +5,6 @@ channels:
 dependencies:
   - python=3.7
   - pytorch
-  - torchvision
   - cudatoolkit
   - absl-py
   - spyder
