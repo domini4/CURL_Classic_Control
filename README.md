@@ -16,13 +16,19 @@ Reinforcement Learning](https://arxiv.org/abs/2004.04136) coupled with the [Data
 To install all dependencies, use the 'enviro_curl.yml' file to create a conda environment. To do so use the below command. Make sure to navigate into the project folder before running this command.
 
 ```
-conda env create -f enviro_curl.yml
+conda env create -f environment.yml
 ```
 
 Now activate conda environments using below comment.
 
 ```
 conda activate curl
+```
+
+Install torchvision dependency. This was triggering an error while packaging with the yml file.
+
+```
+conda install -c pytorch torchvision
 ```
 
 Run the following command with the game as an argument:
